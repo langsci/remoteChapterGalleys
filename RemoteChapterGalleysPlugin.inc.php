@@ -102,28 +102,30 @@ class RemoteChapterGalleysPlugin extends GenericPlugin {
 
 	function handleDisplay($hookName, $args) {
 		$template =& $args[1];
-		switch ($template) {
-			case 'plugins-plugins-generic-bookPage-generic-bookPage:book.tpl':
+		$remoteChapters = array();
+		$request = $this->getRequest();
+		$templateMgr = TemplateManager::getManager($request);
 
-			$request = $this->getRequest();
-			$templateMgr = TemplateManager::getManager($request);
-			$publication = $templateMgr->getTemplateVars('publication');
+        switch ($template) {
+            case str_contains($template, "generic-bookPage:book.tpl"):
 
-			$chapterDao = DAORegistry::getDAO('ChapterDAO'); /* @var $chapterDao ChapterDAO */
-			$chapters = $chapterDao->getByPublicationId($publication->getid());
+            $publication = $templateMgr->getTemplateVars('publication');
 
-			$remoteChapters = null;
-			while ($chapter = $chapters->next()) {
-				if ($chapter->getData('urlRemote'))
-				$remoteChapters[] = $chapter;
-			}
+            $chapterDao = DAORegistry::getDAO('ChapterDAO'); /* @var $chapterDao ChapterDAO */
+            $chapters = $chapterDao->getByPublicationId($publication->getid());
 
-			$templateMgr->assign(array(
-				'remoteChapters' => $remoteChapters
-            ));
+            
+            while ($chapter = $chapters->next()) {
+                if ($chapter->getData('urlRemote')) {
+                    $remoteChapters[] = $chapter;
+                }
+            }
+        }
+		
+		$templateMgr->assign(array(
+			'remoteChapters' => $remoteChapters
+        ));
 
-			return false;
-		}
 		return false;
 	}
 
