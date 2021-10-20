@@ -52,12 +52,14 @@ class RemoteChapterGalleysPlugin extends GenericPlugin {
 			$chapterForm = $params[0];
 			$chapter = $chapterForm->getChapter();
 
-			$urlRemote = $chapter->getData('urlRemote');
+            if ($chapter) {
+                $urlRemote = $chapter->getData('urlRemote');
 
-            $templateMgr->assign(array(
-				'urlRemote' => $urlRemote,
-                'remoteRepresentation' => $urlRemote,
-            ));
+                $templateMgr->assign(array(
+                	'urlRemote' => $urlRemote,
+                	'remoteRepresentation' => $urlRemote,
+            	));
+            }
         }
         return false;
 	}
