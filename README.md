@@ -3,25 +3,26 @@
 - Author: Ronald Steffen
 - Version: 1.0.0.0
 
-About
------
+## Description
 
-This plugin adds the possibility to the chapter tab to remotely hoste chapter galley files.
+This plugin adds the possibility to the chapter tab to remotely host chapter galley files.
 
-License
--------
-Copyright (c) 2017-2021 Language Science Press
+## License
 
-This plugin is licensed under the GNU General Public License v2. 
+Copyright (c) 2021 Language Science Press
 
-System Requirements
--------------------
+Distributed under the GNU GPL v3. For full terms see the file docs/LICENSE.
+
+## System Requirements
+
 This plugin is compatible with...
- - OMP 3.2.1
- - The BookPage-Plugin needs to be installed to actually show the chapter galleys on the frontend page.
 
-Installation
-------------
+- OMP 3.2.1
+- The BookPage-Plugin needs to be installed to actually show the chapter galleys on the frontend page.
+
+## Installation
+
 To install the plugin:
- - Upload the tar.gz file in OMP (Management > Website Settings > Plugins > Generic Plugins), or
- -  install via Github: https://github.com/langsci/remoteChapterGalleys
+
+- Upload the tar.gz file in OMP (Management > Website Settings > Plugins > Generic Plugins), or
+- install via Github: <https://github.com/langsci/remoteChapterGalleys>

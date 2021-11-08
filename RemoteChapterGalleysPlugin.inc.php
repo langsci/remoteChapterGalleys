@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/remoteChapterGalleys/RemoteChapterGalleysPlugin.inc.php
  *
- * Copyright (c) 2017-2021 Language Science Press
- * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
+ * Copyright (c) 2021 Language Science Press
+ * Distributed under the GNU GPL v3. For full terms see the file docs/LICENSE.
  *
  * @class RemoteChapterGalleys
  */
@@ -58,6 +58,7 @@ class RemoteChapterGalleysPlugin extends GenericPlugin {
                 $templateMgr->assign(array(
                 	'urlRemote' => $urlRemote,
                 	'remoteRepresentation' => $urlRemote,
+					'urlRemoteLabel' => $chapter->getData('urlRemoteLabel')
             	));
             }
         }
@@ -69,7 +70,7 @@ class RemoteChapterGalleysPlugin extends GenericPlugin {
 	 * @see Form::readInputData()
 	 */
 	function readInputData($hookName, $params) {
-		$params[1] = array_merge($params[1],['urlRemote','remoteRepresentation']);
+		$params[1] = array_merge($params[1],['urlRemote','urlRemoteLabel','remoteRepresentation']);
 	}
 
 	/**
@@ -78,7 +79,7 @@ class RemoteChapterGalleysPlugin extends GenericPlugin {
 	 * @return array
 	 */
 	function getAdditionalFieldNames($hookName, $params) {
-		$params[1] = ['urlRemote','remoteRepresentation'];
+		$params[1] = ['urlRemote','urlRemoteLabel','remoteRepresentation'];
 		return;
 	}
 
@@ -94,6 +95,7 @@ class RemoteChapterGalleysPlugin extends GenericPlugin {
 
 		if ($chapter) {
 			$chapter->setData('urlRemote', $chapterForm->getData('urlRemote'));
+			$chapter->setData('urlRemoteLabel', $chapterForm->getData('urlRemoteLabel'));
 			$chapterDao->updateObject($chapter);
 		}
 

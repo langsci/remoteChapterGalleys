@@ -25,15 +25,6 @@
 	{rdelim});
 </script>
 
-<script type="text/javascript">
-	// Attach the Information Center handler.
-	$(function() {ldelim}
-		$('#editChapterForm').pkpHandler(
-			'$.pkp.controllers.form.AjaxFormHandler'
-		);
-	{rdelim});
-</script>
-
 <form class="pkp_form" id="editChapterForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT component="grid.users.chapter.ChapterGridHandler" op="updateChapter"}">
 	{csrf}
 	<input type="hidden" name="submissionId" value="{$submissionId|escape}" />
@@ -94,6 +85,7 @@
 			{fbvElement type="checkbox" label="grid.catalogEntry.remotelyHostedContent" id="remotelyHostedContent"}
 			<div id="remote" style="display:none">
 				{fbvElement type="text" id="urlRemote" label="grid.catalogEntry.remoteURL" value=$urlRemote}
+				{fbvElement type="text" id="urlRemoteLabel" label="plugins.generic.remoteChapterGalleys.remoteURLLabel" value=$urlRemoteLabel}
 			</div>
 		{/fbvFormSection}
 	{/if}
