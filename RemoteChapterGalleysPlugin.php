@@ -272,7 +272,8 @@ class RemoteChapterGalleysPlugin extends GenericPlugin
         foreach ((array) $templateMgr->getTemplateVars('chapters') as $chapter) {
             $position++;
             if (preg_match('#^https?://#i', (string) $chapter->getData('urlRemote'))) {
-                $chapter->setData('remoteChapterNumber', $offset + $position);
+                $label = (string) $chapter->getData('urlRemoteLabel');
+                $chapter->setData('remoteChapterNumber', preg_match('/\d/', $label) ? '' : $offset + $position);
                 $remoteChapters[] = $chapter;
             }
         }
