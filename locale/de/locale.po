@@ -1,0 +1,37 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+
+msgid "plugins.generic.remoteChapterGalleys.displayName"
+msgstr "Remote Chapter Galleys"
+
+msgid "plugins.generic.remoteChapterGalleys.description"
+msgstr "Adds the option of assigning remote galleys to chapter definitions."
+
+msgid "plugins.generic.remoteChapterGalleys.remoteURLLabel"
+msgstr "Beschriftung des Download-Buttons."
+
+msgid "plugins.generic.remoteChapterGalleys.chapterLabel"
+msgstr "Kapitel"
+
+msgid "plugins.generic.remoteChapterGalleys.chapterNumber"
+msgstr "Nummer"
+
+msgid "plugins.generic.remoteChapterGalleys.offset.title"
+msgstr "Kapitelnummern-Versatz festlegen"
+
+msgid "plugins.generic.remoteChapterGalleys.offset.label"
+msgstr "Kapitelnummern-Versatz"
+
+msgid "plugins.generic.remoteChapterGalleys.offset.description"
+msgstr "Diese Zahl wird zur Position jedes Kapitels addiert, um die angezeigte Nummer zu erhalten. Bei einem Versatz von 2 wird das erste Kapitel als Kapitel 3 angezeigt."
+
+msgid "plugins.generic.remoteChapterGalleys.offset.invalid"
+msgstr "Bitte geben Sie eine ganze Zahl ein."

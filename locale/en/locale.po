@@ -1,0 +1,37 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+
+msgid "plugins.generic.remoteChapterGalleys.displayName"
+msgstr "Remote Chapter Galleys"
+
+msgid "plugins.generic.remoteChapterGalleys.description"
+msgstr "Adds the option of assigning remote galleys to chapter definitions."
+
+msgid "plugins.generic.remoteChapterGalleys.remoteURLLabel"
+msgstr "Label for the download button."
+
+msgid "plugins.generic.remoteChapterGalleys.chapterLabel"
+msgstr "Chapter"
+
+msgid "plugins.generic.remoteChapterGalleys.chapterNumber"
+msgstr "Number"
+
+msgid "plugins.generic.remoteChapterGalleys.offset.title"
+msgstr "Set chapter number offset"
+
+msgid "plugins.generic.remoteChapterGalleys.offset.label"
+msgstr "Chapter number offset"
+
+msgid "plugins.generic.remoteChapterGalleys.offset.description"
+msgstr "This number is added to the position of each chapter to get its displayed number. With an offset of 2, the first chapter is displayed as chapter 3."
+
+msgid "plugins.generic.remoteChapterGalleys.offset.invalid"
+msgstr "Please enter a whole number."

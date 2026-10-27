@@ -1,7 +1,7 @@
 # Remote Chapter Galleys Plugin
 
 - Author: Ronald Steffen
-- Version: 1.0.0.0
+- Version: 2.0.0.0
 
 ## Description
 
@@ -17,8 +17,8 @@ Distributed under the GNU GPL v3. For full terms see the file docs/LICENSE.
 
 This plugin is compatible with...
 
-- OMP 3.2.1
-- The BookPage-Plugin needs to be installed to actually show the chapter galleys on the frontend page.
+- OMP 3.5
+- No other plugin is required. The remote galleys are appended to the book page through the `Templates::Catalog::Book::Main` hook. The plugin overrides only the chapter form template (`controllers/grid/users/chapter/form/chapterForm.tpl`); re-diff it against core on every OMP upgrade.
 
 ## Installation
 

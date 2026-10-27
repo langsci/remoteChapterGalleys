@@ -1,31 +1,33 @@
 {**
  * plugins/generic/remoteChapterGalleys/templates/controllers/grid/users/chapter/form/chapterForm.tpl
  *
- * Copyright (c) 2014-2020 Simon Fraser University
- * Copyright (c) 2003-2020 John Willinsky
+ * Override of templates/controllers/grid/users/chapter/form/chapterForm.tpl. Re-diff against
+ * the core template on every OMP upgrade. The only additions are the remote galley fields.
+ *
+ * Copyright (c) 2014-2021 Simon Fraser University
+ * Copyright (c) 2003-2021 John Willinsky
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * Chapters grid form
  *
  *}
 
-{if $urlRemote}
-	{assign var="remoteRepresentation" value=true}
-{else}
-	{assign var="remoteRepresentation" value=false}
-{/if}
 <script type="text/javascript">
+	// Attach the Information Center handler.
 	$(function() {ldelim}
-		// Attach the form handler.
-		$('#editChapterForm').pkpHandler('$.pkp.controllers.grid.representations.form.RepresentationFormHandler',
-			{ldelim}
-				remoteRepresentation: {$remoteRepresentation|json_encode}
-			{rdelim}
+		$('#editChapterForm').pkpHandler(
+			'$.pkp.controllers.form.AjaxFormHandler'
 		);
+		$('#remotelyHostedContent').on('change', function() {ldelim}
+			$('#remote').toggle(this.checked);
+			if (!this.checked) {ldelim}
+				$('#urlRemote').val('');
+			{rdelim}
+		{rdelim});
 	{rdelim});
 </script>
 
-<form class="pkp_form" id="editChapterForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT component="grid.users.chapter.ChapterGridHandler" op="updateChapter"}">
+<form class="pkp_form" id="editChapterForm" method="post" action="{url router=PKP\core\PKPApplication::ROUTE_COMPONENT component="grid.users.chapter.ChapterGridHandler" op="updateChapter"}">
 	{csrf}
 	<input type="hidden" name="submissionId" value="{$submissionId|escape}" />
 	<input type="hidden" name="publicationId" value="{$publicationId|escape}" />
@@ -55,40 +57,49 @@
 		{/fbvFormSection}
 	{/if}
 
-	{fbvFormSection}
-		{assign var="uuid" value=""|uniqid|escape}
-		<div id="chapter-authors-{$uuid}">
-			<list-panel
-				v-bind="components.authors"
-				@set="set"
-			/>
-		</div>
-		<script type="text/javascript">
-			pkp.registry.init('chapter-authors-{$uuid}', 'Container', {$chapterAuthorsListData|json_encode});
-		</script>
-	{/fbvFormSection}
-
-	{if $chapterId}
-		{fbvFormSection}
-			{assign var="uuid" value=""|uniqid|escape}
-			<div id="chapter-files-{$uuid}">
-				<list-panel
-					v-bind="components.chapterFilesListPanel"
-					@set="set"
-				/>
-			</div>
-			<script type="text/javascript">
-				pkp.registry.init('chapter-files-{$uuid}', 'Container', {$chapterFilesListData|json_encode});
-			</script>
-		{/fbvFormSection}
-        {fbvFormSection for="remotelyHostedContent" list=true}
-			{fbvElement type="checkbox" label="grid.catalogEntry.remotelyHostedContent" id="remotelyHostedContent"}
-			<div id="remote" style="display:none">
-				{fbvElement type="text" id="urlRemote" label="grid.catalogEntry.remoteURL" value=$urlRemote}
-				{fbvElement type="text" id="urlRemoteLabel" label="plugins.generic.remoteChapterGalleys.remoteURLLabel" value=$urlRemoteLabel}
-			</div>
+	{if $submissionWorkType === APP\submission\Submission::WORK_TYPE_EDITED_VOLUME}
+		{fbvFormSection title="publication.chapter.licenseUrl" for="customExtras"}
+		<div class="pkpFormField__description">{$chapterLicenseUrlDescription}</div>
+		{fbvElement type="text" id="licenseUrl" value=$licenseUrl inline=true size=$fbvStyles.size.LARGE}
 		{/fbvFormSection}
 	{/if}
+
+	{fbvFormSection list=true title="publication.chapter.landingPage" for="customExtras"}
+	{fbvElement type="checkbox" name="isPageEnabled" id="isPageEnabled" checked=$isPageEnabled|compare:true label="publication.chapter.hasLandingPage" value="1" translate="true"}
+	{if $doi}
+		<div class="pkpFormField__description">{translate key="publication.chapter.landingPage.doi.description"}</div>
+	{/if}
+	{/fbvFormSection}
+
+	{if $chapterAuthorOptions}
+		{fbvFormSection list=true title="submission.submit.addAuthor"}
+		{foreach from=$chapterAuthorOptions item="chapterAuthor" key="id"}
+			{fbvElement type="checkbox" id="authors[]" value=$id checked=in_array($id, $selectedChapterAuthors) label=$chapterAuthor|escape translate=false}
+		{/foreach}
+		{/fbvFormSection}
+	{/if}
+
+	{if $chapterFileOptions}
+		{fbvFormSection list=true title="submission.files"}
+			{foreach from=$chapterFileOptions item="chapterFile" key="id"}
+				{fbvElement type="checkbox" id="files[]" value=$id checked=in_array($id, $selectedChapterFiles) label=$chapterFile|escape translate=false}
+			{/foreach}
+		{/fbvFormSection}
+	{/if}
+
+	{* Remote galley fields *}
+	{fbvFormSection list=true for="remotelyHostedContent"}
+		{fbvElement type="checkbox" label="grid.catalogEntry.remotelyHostedContent" id="remotelyHostedContent" checked=!empty($urlRemote)}
+	{/fbvFormSection}
+	<div id="remote" {if empty($urlRemote)}style="display:none"{/if}>
+		{fbvFormSection}
+			{fbvElement type="text" id="urlRemote" label="grid.catalogEntry.remoteURL" value=$urlRemote}
+		{/fbvFormSection}
+		{fbvFormSection}
+			{fbvElement type="text" id="urlRemoteLabel" label="plugins.generic.remoteChapterGalleys.remoteURLLabel" value=$urlRemoteLabel inline=true size=$fbvStyles.size.LARGE}
+			{fbvElement type="text" id="remoteChapterNumber" label="plugins.generic.remoteChapterGalleys.chapterNumber" value=$remoteChapterNumber readonly=true inline=true size=$fbvStyles.size.SMALL}
+		{/fbvFormSection}
+	</div>
 
 	<p><span class="formRequired">{translate key="common.requiredField"}</span></p>
 	{fbvFormButtons submitText="common.save"}

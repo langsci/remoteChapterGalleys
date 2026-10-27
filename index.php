@@ -9,8 +9,4 @@
  */
 
 
-require_once('RemoteChapterGalleysPlugin.inc.php');
-
-return new RemoteChapterGalleysPlugin ();
-
-?>
+return new \APP\plugins\generic\remoteChapterGalleys\RemoteChapterGalleysPlugin();
