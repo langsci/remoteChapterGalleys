@@ -36,6 +36,7 @@ class ChapterOffsetForm extends Form
     public function initData()
     {
         $this->setData(RemoteChapterGalleysPlugin::OFFSET_FIELD, $this->plugin->getChapterOffset($this->publication));
+        $this->setData(RemoteChapterGalleysPlugin::LABEL_FIELD, $this->publication->getData(RemoteChapterGalleysPlugin::LABEL_FIELD));
         $this->setData('submissionId', $this->publication->getData('submissionId'));
         $this->setData('publicationId', $this->publication->getId());
     }
@@ -45,7 +46,7 @@ class ChapterOffsetForm extends Form
      */
     public function readInputData()
     {
-        $this->readUserVars([RemoteChapterGalleysPlugin::OFFSET_FIELD, 'submissionId', 'publicationId']);
+        $this->readUserVars([RemoteChapterGalleysPlugin::OFFSET_FIELD, RemoteChapterGalleysPlugin::LABEL_FIELD, 'submissionId', 'publicationId']);
     }
 
     /**
@@ -56,6 +57,7 @@ class ChapterOffsetForm extends Form
         parent::execute(...$functionArgs);
         Repo::publication()->edit($this->publication, [
             RemoteChapterGalleysPlugin::OFFSET_FIELD => (int) $this->getData(RemoteChapterGalleysPlugin::OFFSET_FIELD),
+            RemoteChapterGalleysPlugin::LABEL_FIELD => trim((string) $this->getData(RemoteChapterGalleysPlugin::LABEL_FIELD)) ?: null,
         ]);
     }
 }

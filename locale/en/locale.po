@@ -24,6 +24,9 @@ msgstr "Chapter"
 msgid "plugins.generic.remoteChapterGalleys.chapterNumber"
 msgstr "Number"
 
+msgid "plugins.generic.remoteChapterGalleys.excludeFromCount"
+msgstr "Do not count this chapter"
+
 msgid "plugins.generic.remoteChapterGalleys.offset.title"
 msgstr "Set chapter number offset"
 
@@ -35,3 +38,12 @@ msgstr "This number is added to the position of each chapter to get its displaye
 
 msgid "plugins.generic.remoteChapterGalleys.offset.invalid"
 msgstr "Please enter a whole number."
+
+msgid "plugins.generic.remoteChapterGalleys.defaultLabel.label"
+msgstr "Default chapter label"
+
+msgid "plugins.generic.remoteChapterGalleys.defaultLabel.description"
+msgstr "Pre-fills the label of new remote chapter galleys."
+
+msgid "plugins.generic.remoteChapterGalleys.numbering.description"
+msgstr "Chapter number = offset + position of the chapter among all chapters, skipping chapters marked \"Do not count this chapter\". When the publication is published, the numbers are written permanently into the labels of remote chapter links whose label contains the default chapter label and no digit. After that, they are no longer recalculated and need to be edited manually."

@@ -18,9 +18,16 @@
 
 	{include file="controllers/notification/inPlaceNotification.tpl" notificationId="chapterOffsetFormNotification"}
 
+	<p class="pkp_help">{translate key="plugins.generic.remoteChapterGalleys.numbering.description"}</p>
+
 	{fbvFormSection title="plugins.generic.remoteChapterGalleys.offset.label" for="chapterNumberOffset" required=true}
 		<p class="pkp_help">{translate key="plugins.generic.remoteChapterGalleys.offset.description"}</p>
 		{fbvElement type="text" id="chapterNumberOffset" name="chapterNumberOffset" value=$chapterNumberOffset required=true size=$fbvStyles.size.SMALL}
+	{/fbvFormSection}
+
+	{fbvFormSection title="plugins.generic.remoteChapterGalleys.defaultLabel.label" for="chapterLabelDefault"}
+		<p class="pkp_help">{translate key="plugins.generic.remoteChapterGalleys.defaultLabel.description"}</p>
+		{fbvElement type="text" id="chapterLabelDefault" name="chapterLabelDefault" value=$chapterLabelDefault size=$fbvStyles.size.MEDIUM}
 	{/fbvFormSection}
 
 	<p><span class="formRequired">{translate key="common.requiredField"}</span></p>

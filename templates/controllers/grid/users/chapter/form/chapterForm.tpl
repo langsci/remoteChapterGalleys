@@ -98,6 +98,7 @@
 		{fbvFormSection}
 			{fbvElement type="text" id="urlRemoteLabel" label="plugins.generic.remoteChapterGalleys.remoteURLLabel" value=$urlRemoteLabel inline=true size=$fbvStyles.size.LARGE}
 			{fbvElement type="text" id="remoteChapterNumber" label="plugins.generic.remoteChapterGalleys.chapterNumber" value=$remoteChapterNumber readonly=true inline=true size=$fbvStyles.size.SMALL}
+			{fbvElement type="checkbox" id="excludeFromCount" label="plugins.generic.remoteChapterGalleys.excludeFromCount" checked=!empty($excludeFromCount) inline=true}
 		{/fbvFormSection}
 	</div>
 

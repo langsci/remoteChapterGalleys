@@ -40,12 +40,7 @@
 					<div class="remoteChapterGalleyEntry-title">{$remoteChapter->getLocalizedTitle()|escape}</div>
 					<div class="remoteChapterGalleyEntry-files">
 						<a href="{$remoteChapter->getData('urlRemote')|escape}" class="cmp_download_link" target="_blank" rel="noopener">
-							{if $remoteChapter->getData('urlRemoteLabel')}
-								{$remoteChapter->getData('urlRemoteLabel')|escape}
-							{else}
-								{translate key="plugins.generic.remoteChapterGalleys.chapterLabel"}
-							{/if}
-							{$remoteChapter->getData('remoteChapterNumber')|escape}
+							{$remoteChapter->getData('urlRemoteLabel')|escape}
 						</a>
 					</div>
 				</div>

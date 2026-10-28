@@ -13,6 +13,7 @@
 
 namespace APP\plugins\generic\remoteChapterGalleys;
 
+use APP\facades\Repo;
 use APP\plugins\generic\remoteChapterGalleys\classes\ChapterGridHandler;
 use APP\publication\Publication;
 use APP\template\TemplateManager;
@@ -25,10 +26,16 @@ use PKP\plugins\Hook;
 class RemoteChapterGalleysPlugin extends GenericPlugin
 {
     /** Chapter settings added by this plugin */
-    public const FIELDS = ['urlRemote', 'urlRemoteLabel'];
+    public const FIELDS = ['urlRemote', 'urlRemoteLabel', 'excludeFromCount'];
 
     /** Publication setting holding the chapter number offset */
     public const OFFSET_FIELD = 'chapterNumberOffset';
+
+    /** Publication setting holding the default chapter label */
+    public const LABEL_FIELD = 'chapterLabelDefault';
+
+    /** Publication setting set once the numbers have been written into the labels */
+    public const NUMBERED_FIELD = 'chapterLabelsNumbered';
 
     /**
      * @copydoc Plugin::register()
@@ -49,6 +56,7 @@ class RemoteChapterGalleysPlugin extends GenericPlugin
             Hook::add('chapterform::execute', [$this, 'executeForm']);
             Hook::add('chapterdao::getAdditionalFieldNames', [$this, 'getAdditionalFieldNames']);
             Hook::add('Templates::Catalog::Book::Main', [$this, 'displayRemoteChapters']);
+            Hook::add('Publication::publish', [$this, 'numberLabelsOnPublish']);
             Hook::add('Schema::get::publication', [$this, 'addPublicationSchema']);
             Hook::add('LoadComponentHandler', [$this, 'loadChapterGridHandler']);
         }
@@ -69,6 +77,52 @@ class RemoteChapterGalleysPlugin extends GenericPlugin
             'description' => 'The number that is added to the position of a chapter to get its displayed chapter number.',
             'validation' => ['nullable'],
         ];
+        $schema->properties->{self::LABEL_FIELD} = (object) [
+            'type' => 'string',
+            'description' => 'The default label of the remote chapter galleys of the publication.',
+            'validation' => ['nullable'],
+        ];
+        $schema->properties->{self::NUMBERED_FIELD} = (object) [
+            'type' => 'boolean',
+            'description' => 'Whether the chapter numbers have been permanently written into the remote chapter labels.',
+            'validation' => ['nullable'],
+        ];
+        return false;
+    }
+
+    /**
+     * Permanently write the chapter numbers into the remote chapter labels
+     * and stop counting dynamically.
+     *
+     * @param string $hookName Publication::publish
+     * @param array $args [&$publication, $oldPublication, $submission]
+     */
+    public function numberLabelsOnPublish($hookName, $args)
+    {
+        $publication = $args[0];
+        if ($publication->getData(self::NUMBERED_FIELD)) {
+            return false;
+        }
+        $offset = $this->getChapterOffset($publication);
+        $defaultLabel = $this->getDefaultLabel($publication);
+
+        $position = 0;
+        foreach ($this->getOrderedChapters($publication->getId()) as $chapter) {
+            if ($chapter->getData('excludeFromCount')) {
+                continue;
+            }
+            $position++;
+            $label = (string) $chapter->getData('urlRemoteLabel');
+            if (!preg_match('#^https?://#i', (string) $chapter->getData('urlRemote'))
+                || preg_match('/\d/', $label)) {
+                continue;
+            }
+            DB::table('submission_chapter_settings')->updateOrInsert(
+                ['chapter_id' => (int) $chapter->getId(), 'locale' => '', 'setting_name' => 'urlRemoteLabel'],
+                ['setting_value' => $label . ' ' . ($offset + $position), 'setting_type' => 'string']
+            );
+        }
+        Repo::publication()->edit($publication, [self::NUMBERED_FIELD => true]);
         return false;
     }
 
@@ -96,18 +150,21 @@ class RemoteChapterGalleysPlugin extends GenericPlugin
     }
 
     /**
-     * Get the chapter ids of a publication in display order.
-     *
-     * @return int[]
+     * Get the default chapter label of a publication, falling back to the locale string.
      */
-    protected function getOrderedChapterIds(int $publicationId): array
+    public function getDefaultLabel(Publication $publication): string
+    {
+        $label = trim((string) $publication->getData(self::LABEL_FIELD));
+        return $label !== '' ? $label : __('plugins.generic.remoteChapterGalleys.chapterLabel');
+    }
+
+    /**
+     * Get the chapters of a publication in display order.
+     */
+    protected function getOrderedChapters(int $publicationId): array
     {
         $chapterDao = DAORegistry::getDAO('ChapterDAO'); /** @var \APP\monograph\ChapterDAO $chapterDao */
-        $ids = [];
-        foreach ($chapterDao->getByPublicationId($publicationId)->toArray() as $chapter) {
-            $ids[] = $chapter->getId();
-        }
-        return $ids;
+        return array_values($chapterDao->getByPublicationId($publicationId)->toArray());
     }
 
     /**
@@ -149,7 +206,20 @@ class RemoteChapterGalleysPlugin extends GenericPlugin
         $form = $args[0];
         $chapter = $form->getChapter();
         $publication = $form->getPublication();
-        $chapterIds = $this->getOrderedChapterIds($publication->getId());
+        $chapters = $this->getOrderedChapters($publication->getId());
+
+        // Number of counted chapters before this one (all of them for a new chapter)
+        $position = 0;
+        $found = false;
+        foreach ($chapters as $other) {
+            if ($chapter && $other->getId() == $chapter->getId()) {
+                $found = true;
+                break;
+            }
+            if (!$other->getData('excludeFromCount')) {
+                $position++;
+            }
+        }
 
         if ($chapter) {
             foreach (self::FIELDS as $field) {
@@ -157,15 +227,13 @@ class RemoteChapterGalleysPlugin extends GenericPlugin
                     $form->setData($field, $chapter->getData($field));
                 }
             }
-            $position = array_search($chapter->getId(), $chapterIds);
-            $position = $position === false ? count($chapterIds) : $position;
         } else {
             if ($form->getData('urlRemoteLabel') === null) {
-                $form->setData('urlRemoteLabel', __('plugins.generic.remoteChapterGalleys.chapterLabel'));
+                $form->setData('urlRemoteLabel', $this->getDefaultLabel($publication));
             }
-            $position = count($chapterIds);
         }
-        $form->setData('remoteChapterNumber', $this->getChapterOffset($publication) + $position + 1);
+        $excluded = $publication->getData(self::NUMBERED_FIELD) || ($chapter && $found && $chapter->getData('excludeFromCount'));
+        $form->setData('remoteChapterNumber', $excluded ? '' : $this->getChapterOffset($publication) + $position + 1);
         return false;
     }
 
@@ -217,6 +285,7 @@ class RemoteChapterGalleysPlugin extends GenericPlugin
         // The pre-filled label is meaningless without a URL
         if ($values['urlRemote'] === null) {
             $values['urlRemoteLabel'] = null;
+            $values['excludeFromCount'] = null;
         }
 
         $chapter = $form->getChapter();
@@ -263,17 +332,9 @@ class RemoteChapterGalleysPlugin extends GenericPlugin
         $templateMgr = $args[1];
         $output = &$args[2];
 
-        $publication = $templateMgr->getTemplateVars('publication');
-        $offset = $publication ? $this->getChapterOffset($publication) : 0;
-
-        // The number counts all chapters, not only those with a remote galley
         $remoteChapters = [];
-        $position = 0;
         foreach ((array) $templateMgr->getTemplateVars('chapters') as $chapter) {
-            $position++;
             if (preg_match('#^https?://#i', (string) $chapter->getData('urlRemote'))) {
-                $label = (string) $chapter->getData('urlRemoteLabel');
-                $chapter->setData('remoteChapterNumber', preg_match('/\d/', $label) ? '' : $offset + $position);
                 $remoteChapters[] = $chapter;
             }
         }
